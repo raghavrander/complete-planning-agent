@@ -1,0 +1,8 @@
+streamlit
+requests
+groq
+sentence-transformers
+torch
+python-dotenv
+streamlit-js-eval
+googlesearch-python
