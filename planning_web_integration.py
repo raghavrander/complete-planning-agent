@@ -154,7 +154,7 @@ def run_research_agent(user_question: str, context: dict) -> str:
     YOUR ANSWER:
     """
     try:
-        response = client.chat.completions.create(messages=[{"role": "user", "content": research_prompt}], model="llama3-70b-8192")
+        response = client.chat.completions.create(messages=[{"role": "user", "content": research_prompt}], model="llama-3.3-70b-versatile")
         return response.choices[0].message.content
     except Exception as e:
         return f"I had trouble analyzing the information. Error: {e}"
@@ -172,7 +172,7 @@ def run_finder_agent(user_prompt: str) -> dict:
     User: "Find me a nice bookstore" -> {"tool": "find_places", "parameters": {"query": "bookstore"}}
     """
     try:
-        chat_completion = client.chat.completions.create(messages=[{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}], model="llama3-8b-8192", temperature=0.0, response_format={"type": "json_object"})
+        chat_completion = client.chat.completions.create(messages=[{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}], model="llama-3.1-8b-instant", temperature=0.0, response_format={"type": "json_object"})
         action = json.loads(chat_completion.choices[0].message.content)
         if isinstance(action, dict) and action.get("tool") == "find_places":
             return find_places(**action["parameters"])
@@ -189,7 +189,7 @@ def run_planning_agent(user_prompt: str) -> dict:
     **Example for "Plan my day":** {{"plan": [{{"step_description": "First, let's get some breakfast.", "tool_query": "breakfast restaurant"}}, {{"step_description": "Next, a fun morning activity.", "tool_query": "museum or park"}}, {{"step_description": "Time for lunch!", "tool_query": "lunch restaurant"}}]}}
     """
     try:
-        plan_completion = client.chat.completions.create(messages=[{"role": "system", "content": "You are an expert travel planner that only outputs JSON."}, {"role": "user", "content": plan_prompt}], model="llama3-70b-8192", temperature=0.1, response_format={"type": "json_object"})
+        plan_completion = client.chat.completions.create(messages=[{"role": "system", "content": "You are an expert travel planner that only outputs JSON."}, {"role": "user", "content": plan_prompt}], model="llama-3.3-70b-versatile", temperature=0.1, response_format={"type": "json_object"})
         plan_steps = json.loads(plan_completion.choices[0].message.content).get("plan", [])
     except Exception as e:
         return {"error": f"Sorry, I had trouble creating a plan. Error: {e}"}
@@ -210,7 +210,7 @@ def synthesize_itinerary(itinerary_items: list) -> str:
     Here are the places I found for the user: {json.dumps(itinerary_items, indent=2)}
     Now, create the final itinerary narrative for the user."""
     try:
-        synthesis_completion = client.chat.completions.create(messages=[{"role": "user", "content": synthesis_prompt}], model="llama3-70b-8192", temperature=0.5)
+        synthesis_completion = client.chat.completions.create(messages=[{"role": "user", "content": synthesis_prompt}], model="llama-3.3-70b-versatile", temperature=0.5)
         return synthesis_completion.choices[0].message.content
     except Exception as e:
         return f"Could not generate a summary. Error: {e}"
@@ -238,7 +238,7 @@ def run_conversational_agent(user_prompt: str) -> str:
     Your Answer:
     """
     try:
-        response = client.chat.completions.create(messages=[{"role": "user", "content": conversational_prompt}], model="llama3-70b-8192", temperature=0.6)
+        response = client.chat.completions.create(messages=[{"role": "user", "content": conversational_prompt}], model="llama-3.3-70b-versatile", temperature=0.6)
         return response.choices[0].message.content
     except Exception as e:
         return f"I'm sorry, I had a little trouble thinking of a response. Error: {e}"
@@ -256,7 +256,7 @@ def run_router_agent(user_prompt: str) -> str:
 
     User request: "{user_prompt}" """
     try:
-        router_completion = client.chat.completions.create(messages=[{"role": "system", "content": "You are an intent classification agent that only responds with a single word: 'planner', 'finder', 'research', or 'conversational'."}, {"role": "user", "content": router_prompt}], model="llama3-8b-8192", temperature=0.0)
+        router_completion = client.chat.completions.create(messages=[{"role": "system", "content": "You are an intent classification agent that only responds with a single word: 'planner', 'finder', 'research', or 'conversational'."}, {"role": "user", "content": router_prompt}], model="llama-3.1-8b-instant", temperature=0.0)
         return router_completion.choices[0].message.content.strip().lower()
     except Exception:
         return "conversational" # Default to conversational on error
